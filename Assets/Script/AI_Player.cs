@@ -2,39 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ColorState { BLUE, YELLOW, RED, GREEN };
+
 public class AI_Player : MonoBehaviour
 {
-    public enum ColorState { BLUE, YELLOW, RED, GREEN };
+    
     [SerializeField] private List<Material> colorMaterials = new List<Material>();
-     private SkinnedMeshRenderer characterMeshReference;
+    [SerializeField] private SkinnedMeshRenderer characterMeshReference;
 
     [SerializeField] private float speed = 15.0f;
     public float speedRate = 1;
     public ColorState actualColor;
 
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
     {
 
         //Inputs de debug pour déplacer le personnage
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.D))
         {
             MoveRight();
         }
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.Q))
         {
             MoveLeft();
         }
-        if (Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKey(KeyCode.S))
         {
             MoveDown();
         }
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.Z))
         {
             MoveUp();
         }
