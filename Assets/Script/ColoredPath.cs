@@ -34,35 +34,18 @@ public class ColoredPath : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        AI_Player ai = other.GetComponent<AI_Player>();
-        if(ai != null)
-        {
-            if(ai.actualColor != actualPathColor)
-            {
-                Debug.Log("reduce speed");
-                ai.speedRate *= 0.5f;
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         AI_Player ai = other.GetComponent<AI_Player>();
         if (ai != null)
         {
             if (ai.actualColor != actualPathColor)
             {
-                ai.speedRate *= 2;
-
-
+                ai.speedRate = ai.minSpeedRate;
+            }
+            else
+            {
+                ai.speedRate = ai.maxSpeedRate;
             }
         }
     }

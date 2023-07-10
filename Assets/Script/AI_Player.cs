@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.XR;
 
 public enum ColorState { BLUE, YELLOW, RED, GREEN };
 
@@ -12,13 +14,31 @@ public class AI_Player : MonoBehaviour
 
     [SerializeField] private float speed = 15.0f;
     public float speedRate = 1;
+
+    public float maxSpeedRate;
+    public float minSpeedRate;
     public ColorState actualColor;
 
+    public List<MailBox> deliveries = new List<MailBox>();
+
+    private void Start()
+    {
+        minSpeedRate = speedRate * 0.5f;
+        maxSpeedRate = speedRate;
+
+        GameManager gameManagerRef = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if(gameManagerRef != null )
+        {
+            foreach (MailBox item in gameManagerRef.GetLevelMailBoxes())
+            {
+                deliveries.Add(item);
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
-
         //Inputs de debug pour déplacer le personnage
         if (Input.GetKey(KeyCode.D))
         {
@@ -107,6 +127,15 @@ public class AI_Player : MonoBehaviour
             }
         }
        
+    }
+
+    public void NextDelivery()
+    {
+    
+        if(deliveries.Count <= 0) 
+        {
+            Debug.Log("Finish");
+        }
     }
 
 }
