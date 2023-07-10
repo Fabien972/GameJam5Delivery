@@ -49,4 +49,13 @@ public class ColoredPath : MonoBehaviour
             }
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        AI_Player ai = other.GetComponent<AI_Player>();
+        if (ai != null)
+        {
+            ai.speedRate = ai.maxSpeedRate;
+        }
+    }
 }
