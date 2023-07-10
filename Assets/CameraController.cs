@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
+        Debug.Log(scroll);
 
         transform.Translate(new Vector3(0, 0, scroll * scrollSpeed * Time.deltaTime));
 
@@ -23,7 +24,7 @@ public class CameraController : MonoBehaviour
         {
             transform.Translate(new Vector3(-speed * Time.deltaTime, 0, 0));
         }
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.S))
         {
             transform.Translate(new Vector3(0, -speed * Time.deltaTime, 0));
         }
