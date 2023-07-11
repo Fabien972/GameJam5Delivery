@@ -9,13 +9,33 @@ using Unity.MLAgents.Sensors;
 public class MoveToTargetAgent : Agent
 {
     [SerializeField] private Transform target;
+    [SerializeField] private List<Transform> hub = new List<Transform>();
     [SerializeField] private Transform env;
     [SerializeField] private MeshRenderer visualAgent;
+    [SerializeField] private int count;
+
 
     public override void OnEpisodeBegin()
     {
-        target.localPosition = new Vector3(Random.Range(-8,-2), 0, Random.Range(-3, 3));
-        transform.localPosition = new Vector3(Random.Range(2,8), 0, Random.Range(-3, 3));
+        count = 0;
+
+        target = hub[count];
+
+        hub[0].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        hub[1].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        hub[3].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        hub[3].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+
+        target.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
+
+        transform.localPosition = new Vector3(Random.Range(-1,1), 0, Random.Range(-1, 1));
+
+
+        hub[0].localPosition = new Vector3(Random.Range(3, 7), 0, Random.Range(3, 7));
+        hub[1].localPosition = new Vector3(Random.Range(-3, -7), 0, Random.Range(3, 7));
+        hub[3].localPosition = new Vector3(Random.Range(-3, -7), 0, Random.Range(-3, -7));
+        hub[3].localPosition = new Vector3(Random.Range(3, 7), 0, Random.Range(-3, -7));
+
 
         env.rotation = Quaternion.Euler(0,  Random.Range(0, 360f),0);
         transform.rotation = Quaternion.identity;
@@ -32,8 +52,14 @@ public class MoveToTargetAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation((Vector2)transform.localPosition);
-        sensor.AddObservation((Vector2)target.localPosition);
+        sensor.AddObservation((Vector3)transform.localPosition);
+
+        sensor.AddObservation((Vector3)target.localPosition);
+
+        sensor.AddObservation((Vector3)hub[0].localPosition);
+        sensor.AddObservation((Vector3)hub[1].localPosition);
+        sensor.AddObservation((Vector3)hub[2].localPosition);
+        sensor.AddObservation((Vector3)hub[3].localPosition);
 
     }
     public override void OnActionReceived(ActionBuffers actions)
@@ -48,16 +74,35 @@ public class MoveToTargetAgent : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("ici");
         if(other.tag == "Target")
         {
-            AddReward(10f);
-            visualAgent.material.color = Color.green;
-            EndEpisode();
+            if(other.name == target.name)
+            {
+                AddReward(200f);
+                Debug.Log(GetCumulativeReward() + " target");
+                visualAgent.material.color = Color.green;
+                count++;
+
+                target.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+                target = hub[count% hub.Count];
+                target.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
+            }
+
+            else
+            {
+                AddReward(-2f);
+                Debug.Log(GetCumulativeReward() +" autre ");
+                visualAgent.material.color = Color.gray;
+            }
+            if(count >= hub.Count){
+                Debug.Log(GetCumulativeReward() + " fin ");
+                EndEpisode();
+            }
         }
         else if(other.tag == "Wall")
         {
-            AddReward(-2f);
+            AddReward(-100f);
+            Debug.Log(GetCumulativeReward() + " mur ");
             visualAgent.material.color = Color.red;
             EndEpisode();
         }
