@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class MoveToGoalAgent : Agent
@@ -15,19 +13,40 @@ public class MoveToGoalAgent : Agent
     [SerializeField] private Material winMaterial;
     [SerializeField] private Material loseMaterial;
     [SerializeField] private MeshRenderer floorMeshRenderer;
+    [SerializeField] private TextMeshProUGUI rewardText;
 
-    private float lastDistance = Single.MaxValue;
+    private string lastValue = "0";
+    private float value = 0.0f;
+    
+    private Rigidbody rb;
+    
+    public override void Initialize()
+    {
+        // Cache the agent rigidbody
+        rb = GetComponent<Rigidbody>();
+    }
 
     public override void OnEpisodeBegin()
     {
-        transform.localPosition = new Vector3(Random.Range(-3f, 3f), 0, Random.Range(-3f, 3f));
-        targetTransform.localPosition = new Vector3(8.5f, 0, 0) + new Vector3(Random.Range(-3f, 3f), 0, Random.Range(-3f, 3f));
+        Vector3 agentPosition;
+        Vector3 goalPosition;
+        
+        do {
+            agentPosition = new Vector3(Random.Range(-3f, 11.5f), 0, Random.Range(-4.15f, 4.15f));
+            goalPosition = new Vector3(Random.Range(-3f, 11.5f), 0, Random.Range(-4.15f, 4.15f));
+        } while (Vector3.Distance(agentPosition, goalPosition) < 4.0f);
+
+        transform.localPosition = agentPosition;
+        targetTransform.localPosition = goalPosition;
+        
+        lastValue = value.ToString("F2");
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
         sensor.AddObservation(targetTransform.localPosition);
+        sensor.AddObservation(rb.velocity);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -37,18 +56,26 @@ public class MoveToGoalAgent : Agent
 
         transform.localPosition += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed;
 
-        // float distance = Vector3.Distance(transform.position, targetTransform.position);
+        // Vector3 currentDir = (new Vector3(moveX, 0, moveZ)).normalized;
+        // Vector3 targetDir = (targetTransform.localPosition - transform.localPosition).normalized;
         //
-        // if (distance < lastDistance)
+        // if (Mathf.Approximately(moveX + moveZ, 0))
         // {
-        //     AddReward(0.01f);
+        //     SetReward(-1);
         // }
         // else
         // {
-        //     AddReward(-0.01f);
+        //     float angle = Vector3.Angle(currentDir, targetDir);
+        //     // SetReward(1.0f - (angle/180.0f));
         // }
-        //
-        // lastDistance = distance;
+        
+        AddReward(-1.0f / MaxStep);
+        value = GetCumulativeReward();
+
+        if (StepCount >= MaxStep)
+        {
+            floorMeshRenderer.material = loseMaterial;
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -62,18 +89,22 @@ public class MoveToGoalAgent : Agent
     {
         if (other.TryGetComponent<Goal>(out Goal goal))
         {
-            AddReward(10.0f);
+            AddReward(5.0f);
             floorMeshRenderer.material = winMaterial;
-            
-            EndEpisode();
         }
         
         if (other.TryGetComponent<Wall>(out Wall wall))
         {
-            AddReward(-10.0f);
+            AddReward(-5.0f);
             floorMeshRenderer.material = loseMaterial;
-            
-            EndEpisode();
         }
+        
+        value = GetCumulativeReward();
+        EndEpisode();
+    }
+    
+    private void Update()
+    {
+        rewardText.SetText(lastValue + " / " + value.ToString("F2"));
     }
 }
