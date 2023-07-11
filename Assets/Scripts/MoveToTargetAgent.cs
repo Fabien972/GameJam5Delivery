@@ -9,15 +9,17 @@ using Unity.MLAgents.Sensors;
 public class MoveToTargetAgent : Agent
 {
     [SerializeField] private Transform target;
-    [SerializeField] private Transform env;
-    [SerializeField] private MeshRenderer visualAgent;
+    [SerializeField] private LBoxs LBoxs;
 
+    public int count;
 
     public override void OnEpisodeBegin()
     {
-        
-        target.localPosition = new Vector3(Random.Range(10, 18), 0, Random.Range(-3, 3));
-        transform.localPosition = new Vector3(Random.Range(-18,10), 0, Random.Range(-3, 3));
+        count = 0;
+        target = LBoxs.mailBoxes[count].transform;
+
+        //target.localPosition = new Vector3(Random.Range(10, 18), 0, Random.Range(-3, 3));
+        // transform.localPosition = new Vector3(Random.Range(-18,10), 0, Random.Range(-3, 3));
 
     }
 
@@ -35,7 +37,10 @@ public class MoveToTargetAgent : Agent
 
         sensor.AddObservation((Vector3)target.localPosition);
 
-
+        foreach (MailBox item in LBoxs.mailBoxes)
+        {
+            sensor.AddObservation((Vector3)item.transform.position);
+        }
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -49,19 +54,26 @@ public class MoveToTargetAgent : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Target")
+        if (other.tag == "Target")
         {
-            AddReward(200f);
-            Debug.Log(GetCumulativeReward() + " target");
-            visualAgent.material.color = Color.green;
-
-            EndEpisode();
+            if (other.name == target.name)
+            {
+                AddReward(200f);
+                count++;
+                target = LBoxs.mailBoxes[count % LBoxs.mailBoxes.Count].transform;
+            }
+            else
+            {
+                AddReward(-2f);
+            }
+            if (count >= LBoxs.mailBoxes.Count)
+            {
+                EndEpisode();
+            }
         }
-        else if(other.tag == "Wall")
+        else if (other.tag == "Wall")
         {
             AddReward(-100f);
-            Debug.Log(GetCumulativeReward() + " mur ");
-            visualAgent.material.color = Color.red;
             EndEpisode();
         }
     }
