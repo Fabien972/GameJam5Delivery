@@ -40,7 +40,7 @@ public class PostalAgent : Agent
 
     public override void Initialize()
     {
-        minSpeedRate = speedRate * 0.5f;
+        minSpeedRate = speedRate * 0.1f;
         maxSpeedRate = speedRate;
 
         // GameManager gameManagerRef = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -130,10 +130,15 @@ public class PostalAgent : Agent
         {
             SetColor(ColorState.GREEN);
         }
-
+        
         if (currentFloorColor != actualColor)
         {
-            CustomAddReward(-0.01f);
+            speedRate = minSpeedRate;
+            CustomAddReward(-0.02f);
+        }
+        else
+        {
+            speedRate = maxSpeedRate;
         }
 
         CustomAddReward(-1.0f / MaxStep);

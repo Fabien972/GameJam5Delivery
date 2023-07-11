@@ -1380,9 +1380,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 34dc1fbf79b98194ebabae0fc5350b4b, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: PostalBehaviour
   TeamId: 0
   m_UseChildSensors: 1
@@ -1433,8 +1433,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Camera: {fileID: 8904311939768453763}
   m_SensorName: CameraSensor
-  m_Width: 1
-  m_Height: 1
+  m_Width: 20
+  m_Height: 20
   m_Grayscale: 0
   m_ObservationType: 0
   m_RuntimeCameraEnable: 0
@@ -2331,8 +2331,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 0.01
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
