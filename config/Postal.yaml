@@ -1,5 +1,5 @@
 behaviors:
-  MoveToGoal:
+  PostalBehaviour:
     trainer_type: ppo
     summary_freq: 10000
     max_steps: 10000000
