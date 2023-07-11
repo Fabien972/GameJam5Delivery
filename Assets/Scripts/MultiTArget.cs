@@ -5,7 +5,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using UnityEngine.UI;
 using Unity.MLAgents.Sensors;
-
+/*
 public class MoveToTargetAgent : Agent
 {
     [SerializeField] private Transform target;
@@ -28,7 +28,7 @@ public class MoveToTargetAgent : Agent
 
         target.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
 
-        transform.localPosition = new Vector3(Random.Range(-1,1), 0, Random.Range(-1, 1));
+        transform.localPosition = new Vector3(Random.Range(-1, 1), 0, Random.Range(-1, 1));
 
 
         hub[0].localPosition = new Vector3(Random.Range(3, 7), 0, Random.Range(3, 7));
@@ -37,9 +37,9 @@ public class MoveToTargetAgent : Agent
         hub[3].localPosition = new Vector3(Random.Range(3, 7), 0, Random.Range(-3, -7));
 
 
-        env.rotation = Quaternion.Euler(0,  Random.Range(0, 360f),0);
+        env.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
         transform.rotation = Quaternion.identity;
-        
+
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -69,14 +69,14 @@ public class MoveToTargetAgent : Agent
 
         float mouvementSpeed = 5f;
 
-        transform.localPosition += new Vector3(moveX,0, moveY) * Time.deltaTime * mouvementSpeed;
+        transform.localPosition += new Vector3(moveX, 0, moveY) * Time.deltaTime * mouvementSpeed;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Target")
+        if (other.tag == "Target")
         {
-            if(other.name == target.name)
+            if (other.name == target.name)
             {
                 AddReward(200f);
                 Debug.Log(GetCumulativeReward() + " target");
@@ -84,22 +84,23 @@ public class MoveToTargetAgent : Agent
                 count++;
 
                 target.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
-                target = hub[count% hub.Count];
+                target = hub[count % hub.Count];
                 target.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
             }
 
             else
             {
                 AddReward(-2f);
-                Debug.Log(GetCumulativeReward() +" autre ");
+                Debug.Log(GetCumulativeReward() + " autre ");
                 visualAgent.material.color = Color.gray;
             }
-            if(count >= hub.Count){
+            if (count >= hub.Count)
+            {
                 Debug.Log(GetCumulativeReward() + " fin ");
                 EndEpisode();
             }
         }
-        else if(other.tag == "Wall")
+        else if (other.tag == "Wall")
         {
             AddReward(-100f);
             Debug.Log(GetCumulativeReward() + " mur ");
@@ -108,3 +109,4 @@ public class MoveToTargetAgent : Agent
         }
     }
 }
+*/
