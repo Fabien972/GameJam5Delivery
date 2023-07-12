@@ -11,51 +11,70 @@ public class ColoredPath : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
+        //Colored path or neutral
+        if (Random.value > 0.5f)
         {
-            switch (actualPathColor)
+            actualPathColor = ColorState.NEUTRAL;
+        }
+        else
+        {
+            actualPathColor = (ColorState)Random.Range(1, 5);
+            MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+
+            //Randomcolor
+            if (meshRenderer != null)
             {
-                case ColorState.BLUE:
-                    meshRenderer.material = colorMaterials[0];
-                    break;
-                case ColorState.YELLOW:
-                    meshRenderer.material = colorMaterials[1];
-                    break;
-                case ColorState.RED:
-                    meshRenderer.material = colorMaterials[2];
-                    break;
-                case ColorState.GREEN:
-                    meshRenderer.material = colorMaterials[3];
-                    break;
-                default:
-                    break;
+                switch (actualPathColor)
+                {
+                    case ColorState.BLUE:
+                        meshRenderer.material = colorMaterials[0];
+                        break;
+                    case ColorState.YELLOW:
+                        meshRenderer.material = colorMaterials[1];
+                        break;
+                    case ColorState.RED:
+                        meshRenderer.material = colorMaterials[2];
+                        break;
+                    case ColorState.GREEN:
+                        meshRenderer.material = colorMaterials[3];
+                        break;
+                    default:
+                        break;
+                }
             }
         }
+        
     }
 
     private void OnTriggerStay(Collider other)
     {
-        AI_Player ai = other.GetComponent<AI_Player>();
-        if (ai != null)
+        if(actualPathColor != ColorState.NEUTRAL)
         {
-            if (ai.actualColor != actualPathColor)
+            AI_Player ai = other.GetComponent<AI_Player>();
+            if (ai != null)
             {
-                ai.speedRate = ai.minSpeedRate;
-            }
-            else
-            {
-                ai.speedRate = ai.maxSpeedRate;
+                if (ai.actualColor != actualPathColor)
+                {
+                    ai.speedRate = ai.minSpeedRate;
+                }
+                else
+                {
+                    ai.speedRate = ai.maxSpeedRate;
+                }
             }
         }
+
     }
 
     private void OnTriggerExit(Collider other)
     {
-        AI_Player ai = other.GetComponent<AI_Player>();
-        if (ai != null)
+        if (actualPathColor != ColorState.NEUTRAL)
         {
-            ai.speedRate = ai.maxSpeedRate;
+            AI_Player ai = other.GetComponent<AI_Player>();
+            if (ai != null)
+            {
+                ai.speedRate = ai.maxSpeedRate;
+            }
         }
     }
 }

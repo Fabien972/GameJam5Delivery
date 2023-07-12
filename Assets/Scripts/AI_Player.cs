@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
 
-public enum ColorState { BLUE, YELLOW, RED, GREEN };
+public enum ColorState { NEUTRAL, BLUE, YELLOW, RED, GREEN };
 
 public class AI_Player : MonoBehaviour
 {
