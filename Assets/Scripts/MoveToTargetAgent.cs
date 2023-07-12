@@ -10,6 +10,8 @@ public class MoveToTargetAgent : Agent
 {
     [SerializeField] private Transform target;
     [SerializeField] private LBoxs LBoxs;
+    [SerializeField] private MeshRenderer visualAgent;
+
 
     public int count;
 
@@ -19,7 +21,7 @@ public class MoveToTargetAgent : Agent
         target = LBoxs.mailBoxes[count].transform;
 
         //target.localPosition = new Vector3(Random.Range(10, 18), 0, Random.Range(-3, 3));
-        // transform.localPosition = new Vector3(Random.Range(-18,10), 0, Random.Range(-3, 3));
+        transform.localPosition = new Vector3(0, 0, 0);
 
     }
 
@@ -39,7 +41,8 @@ public class MoveToTargetAgent : Agent
 
         foreach (MailBox item in LBoxs.mailBoxes)
         {
-            sensor.AddObservation((Vector3)item.transform.position);
+            sensor.AddObservation((Vector3)item.transform.localPosition
+                + LBoxs.transform.localPosition);
         }
     }
     public override void OnActionReceived(ActionBuffers actions)
@@ -56,15 +59,18 @@ public class MoveToTargetAgent : Agent
     {
         if (other.tag == "Target")
         {
+            Debug.Log("target");
             if (other.name == target.name)
             {
-                AddReward(200f);
+                AddReward(2000f);
+                visualAgent.material.color = Color.green;
                 count++;
                 target = LBoxs.mailBoxes[count % LBoxs.mailBoxes.Count].transform;
             }
             else
             {
-                AddReward(-2f);
+                visualAgent.material.color = Color.gray;
+                AddReward(-100f);
             }
             if (count >= LBoxs.mailBoxes.Count)
             {
@@ -73,6 +79,8 @@ public class MoveToTargetAgent : Agent
         }
         else if (other.tag == "Wall")
         {
+            Debug.Log("wall");
+            visualAgent.material.color = Color.red;
             AddReward(-100f);
             EndEpisode();
         }
