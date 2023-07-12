@@ -10,21 +10,14 @@ using UnityEngine.UIElements;
 using UnityEngine.XR;
 using Random = UnityEngine.Random;
 
+// mlagents-learn config\Postal.yaml --env=Build --no-graphics --run-id=PostalMassive105
+// mlagents-learn config\Postal.yaml --run-id=PostalMassive110
+
 public class PostalAgent : Agent
 {
     
     [SerializeField] private float moveSpeed = 15.0f;
     
-    [SerializeField] private Transform targetTransform;
-    [SerializeField] private Material winMaterial;
-    [SerializeField] private Material loseMaterial;
-    [SerializeField] private MeshRenderer floorMeshRenderer;
-    [SerializeField] private TextMeshProUGUI rewardText;
-
-    private string lastValue = "0";
-    private float value = 0.0f;
-    
-    [SerializeField] private List<ColorPath> ColorPaths = new List<ColorPath>();
     [SerializeField] private List<Material> colorMaterials = new List<Material>();
     [SerializeField] private SkinnedMeshRenderer characterMeshReference;
     private Rigidbody rb;
@@ -36,8 +29,10 @@ public class PostalAgent : Agent
     
     public ColorState currentFloorColor;
 
-    // public List<PostalBox> deliveries = new List<PostalBox>();
+    private List<Transform> deliveries = new List<Transform>();
 
+    private List<GameObject> checkpoints = new List<GameObject>();
+    
     public override void Initialize()
     {
         minSpeedRate = speedRate * 0.1f;
@@ -54,43 +49,26 @@ public class PostalAgent : Agent
         
         // Cache the agent rigidbody
         rb = GetComponent<Rigidbody>();
+
+        deliveries = PostalGameManager.Instance.postalBoxes;
     }
     
     public override void OnEpisodeBegin()
     {
-        // Vector3 agentPosition;
-        // Vector3 goalPosition;
-        //
-        // do {
-        //     agentPosition = new Vector3(Random.Range(-3f, 11.5f), 0, Random.Range(-4.15f, 4.15f));
-        //     goalPosition = new Vector3(Random.Range(-3f, 11.5f), 0, Random.Range(-4.15f, 4.15f));
-        // } while (Vector3.Distance(agentPosition, goalPosition) < 4.0f);
-        //
-        // transform.localPosition = agentPosition;
-        // targetTransform.localPosition = goalPosition;
-        
-        Vector3 agentPosition = Vector3.zero;
-        transform.localPosition = agentPosition;
-
-        foreach (var path in ColorPaths)
-        {
-            path.SetColor((ColorState) Random.Range(0, 4));
-        }
+        transform.localPosition = PostalGameManager.Instance.GetRandomSpawnPos();
 
         currentFloorColor = (ColorState) Random.Range(0, 4);
         SetColor(currentFloorColor);
 
         speedRate = maxSpeedRate;
         
-        lastValue = value.ToString("F2");
+        checkpoints.Clear();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(targetTransform.localPosition);
-        sensor.AddObservation(rb.velocity);
-        sensor.AddObservation(speedRate);
+        sensor.AddObservation(deliveries[0].localPosition);
         sensor.AddObservation((int) currentFloorColor);
     }
 
@@ -99,16 +77,15 @@ public class PostalAgent : Agent
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
+        var lastDist = Vector3.Distance(transform.localPosition, deliveries[0].localPosition);
+
         transform.localPosition += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed * speedRate;
 
-        if (transform.localPosition.y <= -1)
-        {
-            CustomAddReward(-10);
-            floorMeshRenderer.material = loseMaterial;
-            EndEpisode();
-            return;
-        }
-        
+        // if (Vector3.Distance(transform.localPosition, deliveries[0].localPosition) >= lastDist)
+        // {
+        //     AddReward(-0.3f);
+        // }
+
         int newColor = actions.DiscreteActions[0];
         
         if (newColor == 1)
@@ -134,18 +111,33 @@ public class PostalAgent : Agent
         if (currentFloorColor != actualColor)
         {
             speedRate = minSpeedRate;
-            CustomAddReward(-0.02f);
+            AddReward(-0.04f);
         }
         else
         {
             speedRate = maxSpeedRate;
         }
+        
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 10, 0), Vector3.down, out hit, 100, 1 << 8 /* Road */))
+        {
+            if (hit.transform.TryGetComponent(out ColorPath path))
+            {
+                currentFloorColor = path.actualPathColor;
+            }
+        }
+        else
+        {
+            AddReward(-50);
+            PostalGameManager.Instance.AddFailure();
+            EndEpisode();
+        }
 
-        CustomAddReward(-1.0f / MaxStep);
+        AddReward(-0.5f / MaxStep);
 
         if (StepCount >= MaxStep)
         {
-            floorMeshRenderer.material = loseMaterial;
+            PostalGameManager.Instance.AddFailure();
         }
     }
 
@@ -162,27 +154,28 @@ public class PostalAgent : Agent
                             : Input.GetKey(KeyCode.Keypad3) ? 4 : 0);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.TryGetComponent(out ColorPath path))
-        {
-            currentFloorColor = path.actualPathColor;
-        }
-        
         if (other.TryGetComponent(out PostalBox box))
         {
-            CustomAddReward(10.0f);
-            floorMeshRenderer.material = winMaterial;
+            AddReward(100.0f);
+            PostalGameManager.Instance.AddSuccess();
             EndEpisode();
+        }
+        
+        if (other.CompareTag("Checkpoint") && !checkpoints.Contains(other.gameObject))
+        {
+            checkpoints.Add(other.gameObject);
         }
     }
 
-    void CustomAddReward(float reward)
+    private void OnTriggerEnter(Collider other)
     {
-        AddReward(reward);
-        value = GetCumulativeReward();
-        
-        rewardText?.SetText(lastValue + " / " + value.ToString("F2"));
+        if (other.CompareTag("Checkpoint") && !checkpoints.Contains(other.gameObject))
+        {
+            checkpoints.Add(other.gameObject);
+            AddReward(20.0f);
+        }
     }
 
     public void SetColor(ColorState color)

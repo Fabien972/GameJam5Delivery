@@ -1,10 +1,10 @@
 behaviors:
   PostalBehaviour:
     trainer_type: ppo
-    summary_freq: 10000
+    summary_freq: 50000
     max_steps: 10000000
-    keep_checkpoints: 5
-    checkpoint_interval: 500000
+    keep_checkpoints: 5000
+    checkpoint_interval: 200000
     time_horizon: 64
     threaded: false
     hyperparameters:
@@ -46,7 +46,7 @@ behaviors:
 #        learning_rate: 3e-4
 #      gail:
 #         strength: 0.9
-#         demo_path: Assets/Demonstrations/MoveToGoal_2.demo
+#         demo_path: Assets/Demonstrations/HEY.demo
 #         gamma: 0.99
 #         learning_rate: 3e-4
 #         use_actions: false
