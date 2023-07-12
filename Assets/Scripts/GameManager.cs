@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("Mailbox Settings")]
-    [SerializeField]
     private List<MailBox> mailBoxes = new List<MailBox>();
 
     [SerializeField]
@@ -58,10 +57,11 @@ public class GameManager : MonoBehaviour
         {
             int index = Random.Range(0, mailBoxSpawn.Count);
             Transform trans = mailBoxSpawn[index].transform;
+            Debug.Log(trans);
+
             if (trans != null)
             {
                 MailBox tempMail = Instantiate(mailBoxPrefab, trans.position, Quaternion.identity).GetComponent<MailBox>();
-                Debug.Log(tempMail);
                 if(tempMail != null)
                 {
                     mailBoxes.Add(tempMail);

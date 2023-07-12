@@ -4,5 +4,4 @@ using UnityEngine;
 
 public class MailBox : MonoBehaviour
 {
-    public bool isDelivered = false;
 }
