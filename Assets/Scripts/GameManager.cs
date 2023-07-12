@@ -28,8 +28,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        GenerateRoads();
         GenerateMailBoxs();
+        GenerateRoads();
     }
 
     public List<MailBox> GetLevelMailBoxes() 
@@ -56,7 +56,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i <= maxMailBoxOnLevel; i++)
         {
             int index = Random.Range(0, mailBoxSpawn.Count);
-            Transform trans = mailBoxSpawn[Random.Range(0, mailBoxSpawn.Count)].transform;
+            Transform trans = mailBoxSpawn[index].transform;
+            Debug.Log(trans);
+
             if (trans != null)
             {
                 MailBox tempMail = Instantiate(mailBoxPrefab, trans).GetComponent<MailBox>();
