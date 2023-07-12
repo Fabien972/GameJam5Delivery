@@ -39,7 +39,7 @@ public class AI_Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Inputs de debug pour déplacer le personnage
+        //Inputs de debug pour dÃ©placer le personnage
         if (Input.GetKey(KeyCode.D))
         {
             MoveRight();
