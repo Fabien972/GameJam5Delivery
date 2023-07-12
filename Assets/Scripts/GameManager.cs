@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
 
             if (trans != null)
             {
-                MailBox tempMail = Instantiate(mailBoxPrefab, trans).GetComponent<MailBox>();
+                MailBox tempMail = Instantiate(mailBoxPrefab, trans.position, Quaternion.identity).GetComponent<MailBox>();
                 if(tempMail != null)
                 {
                     mailBoxes.Add(tempMail);
