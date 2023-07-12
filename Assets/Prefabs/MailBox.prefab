@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 7754555888798057980}
   - component: {fileID: 7754555888797005900}
   - component: {fileID: 7745674957456140664}
+  - component: {fileID: 7696208500726047935}
+  - component: {fileID: 39569827551879276}
   m_Layer: 0
   m_Name: MailBox
   m_TagString: Untagged
@@ -98,3 +100,28 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 43840884233787176, guid: cc8a6a76302252b4d88ba76caa1f1cfd, type: 2}
+--- !u!135 &7696208500726047935
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7754555888795034528}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &39569827551879276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7754555888795034528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26d11a82adb30e64980db6e81e226041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
