@@ -16,6 +16,7 @@ public class PostalGameManager : MonoBehaviour
     public GameObject postalBoxPrefab;
     
     public GameObject agentPrefab;
+    public int boxcount = 20;
     public int agentCount = 20;
     public float randomRate = 15;
     private List<GameObject> agents = new List<GameObject>();
@@ -23,13 +24,9 @@ public class PostalGameManager : MonoBehaviour
     public TextMeshProUGUI successText;
     public TextMeshProUGUI failureText;
     
-    [HideInInspector] public List<Transform> postalBoxes = new List<Transform>();
+    public List<Transform> postalBoxes = new List<Transform>();
     
-    public List<Transform> destroyableRoads1 = new List<Transform>();
-    public List<Transform> destroyableRoads2 = new List<Transform>();
-    public List<Transform> destroyableRoads3 = new List<Transform>();
-    public List<Transform> destroyableRoads4 = new List<Transform>();
-    public List<Transform> destroyableRoads5 = new List<Transform>();
+    
     private List<ColorPath> colorRoads = new List<ColorPath>();
 
     public static PostalGameManager Instance { get; private set; }
@@ -52,44 +49,16 @@ public class PostalGameManager : MonoBehaviour
         var roads = GameObject.FindGameObjectsWithTag("Road");
         colorRoads.AddRange(roads.Where(r => r.GetComponent<ColorPath>()).Select(r => r.GetComponent<ColorPath>()));
 
-        // var keep = postalBoxes[Random.Range(0, postalBoxes.Count)];
-        // foreach (var e in postalBoxes)
-        // {
-        //     if (e != keep)
-        //     {
-        //         Destroy(e.gameObject);
-        //     }
-        // }
-        // postalBoxes.Add(keep);
+       
 
         postalBoxes.Clear();
-        for (int i = 0; i < 1 /* boxcount */; i++)
+        for (int i = 0; i <  boxcount ; i++)
         {
             var box = Instantiate(postalBoxPrefab, environment.transform);
             postalBoxes.Add(box.transform);
         }
 
-        // int index;
-        
-        // index = Random.Range(0, destroyableRoads1.Count);
-        // Destroy(destroyableRoads1[index].gameObject);
-        //
-        // if (Random.value <= 0.5)
-        // {
-        //     index = Random.Range(0, destroyableRoads2.Count);
-        //     Destroy(destroyableRoads2[index].gameObject);
-        //
-        //     index = Random.Range(0, destroyableRoads5.Count);
-        //     Destroy(destroyableRoads5[index].gameObject);
-        // }
-        // else
-        // {
-        //     index = Random.Range(0, destroyableRoads3.Count);
-        //     Destroy(destroyableRoads3[index].gameObject);
-        //     
-        //     index = Random.Range(0, destroyableRoads4.Count);
-        //     Destroy(destroyableRoads4[index].gameObject);
-        // }
+       
 
         for (int i = 0; i < agentCount; i++)
         {
@@ -127,13 +96,6 @@ public class PostalGameManager : MonoBehaviour
             Random.Range(position.z, position1.z));
     }
 
-    public void CheckAgents()
-    {
-        // if (success + failure >= agents.Count)
-        // {
-        //     Invoke(nameof(ReloadScene), 0.5f);
-        // }
-    }
 
     void ReloadScene()
     {
@@ -144,14 +106,12 @@ public class PostalGameManager : MonoBehaviour
     {
         success++;
         successText.SetText(success.ToString());
-        CheckAgents();
     }
     
     public void AddFailure()
     {
         failure++;
         failureText.SetText(failure.ToString());
-        CheckAgents();
     }
         
     // Update is called once per frame

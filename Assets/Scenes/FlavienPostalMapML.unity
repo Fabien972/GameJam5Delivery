@@ -3840,8 +3840,9 @@ MonoBehaviour:
   maxPosition: {fileID: 44605942}
   postalBoxPrefab: {fileID: 2365777197058806955, guid: 0c57dc0a435571c41b2bf6d4c9e41c77, type: 3}
   agentPrefab: {fileID: 1825435176357014171, guid: 64d9aadf7d2faa94cbca24de49423598, type: 3}
+  boxcount: 4
   agentCount: 80
-  randomRate: 30
+  randomRate: 120
   successText: {fileID: 6035128592635396375}
   failureText: {fileID: 1808267956}
   postalBoxes:
@@ -6315,15 +6316,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 44605942, guid: 0473121576e1072468d04bca182e3c29, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 72.5
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 44605942, guid: 0473121576e1072468d04bca182e3c29, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 72.5
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 419794208, guid: 0473121576e1072468d04bca182e3c29, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 419794208, guid: 0473121576e1072468d04bca182e3c29, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6331,7 +6332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 419794208, guid: 0473121576e1072468d04bca182e3c29, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.5
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 24781379583572853, guid: 0473121576e1072468d04bca182e3c29, type: 3}
       propertyPath: m_IsActive

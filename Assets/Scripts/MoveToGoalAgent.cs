@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -108,3 +108,4 @@ public class MoveToGoalAgent : Agent
         rewardText.SetText(lastValue + " / " + value.ToString("F2"));
     }
 }
+*/

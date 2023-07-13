@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Mail;
 using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -8,6 +9,7 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
+using static UnityEngine.GraphicsBuffer;
 using Random = UnityEngine.Random;
 
 // mlagents-learn config\Postal.yaml --env=Build --no-graphics --run-id=PostalMassive105
@@ -21,6 +23,10 @@ public class PostalAgent : Agent
     [SerializeField] private List<Material> colorMaterials = new List<Material>();
     [SerializeField] private SkinnedMeshRenderer characterMeshReference;
     private Rigidbody rb;
+    [SerializeField] private int count;
+
+
+    [SerializeField] private Transform target;
 
     public float speedRate = 1;
     public float maxSpeedRate;
@@ -31,7 +37,6 @@ public class PostalAgent : Agent
 
     private List<Transform> deliveries = new List<Transform>();
 
-    private List<GameObject> checkpoints = new List<GameObject>();
     
     public override void Initialize()
     {
@@ -55,6 +60,9 @@ public class PostalAgent : Agent
     
     public override void OnEpisodeBegin()
     {
+        target = deliveries[0];
+        count = 0;
+
         transform.localPosition = PostalGameManager.Instance.GetRandomSpawnPos();
 
         currentFloorColor = (ColorState) Random.Range(0, 4);
@@ -62,13 +70,16 @@ public class PostalAgent : Agent
 
         speedRate = maxSpeedRate;
         
-        checkpoints.Clear();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(deliveries[0].localPosition);
+        sensor.AddObservation(target.localPosition);
+        foreach (Transform T in deliveries)
+        {
+            sensor.AddObservation(T.localPosition);
+        }
         sensor.AddObservation((int) currentFloorColor);
     }
 
@@ -77,7 +88,7 @@ public class PostalAgent : Agent
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
-        var lastDist = Vector3.Distance(transform.localPosition, deliveries[0].localPosition);
+        //var lastDist = Vector3.Distance(transform.localPosition, deliveries[0].localPosition);
 
         transform.localPosition += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed * speedRate;
 
@@ -154,28 +165,37 @@ public class PostalAgent : Agent
                             : Input.GetKey(KeyCode.Keypad3) ? 4 : 0);
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.TryGetComponent(out PostalBox box))
-        {
-            AddReward(100.0f);
-            PostalGameManager.Instance.AddSuccess();
-            EndEpisode();
-        }
-        
-        if (other.CompareTag("Checkpoint") && !checkpoints.Contains(other.gameObject))
-        {
-            checkpoints.Add(other.gameObject);
-        }
-    }
+   
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Checkpoint") && !checkpoints.Contains(other.gameObject))
+        if (other.tag == "Target")
         {
-            checkpoints.Add(other.gameObject);
-            AddReward(20.0f);
+            if (other.name == target.name)
+            {
+                AddReward(20f);
+                count++;
+
+                target = deliveries[count % deliveries.Count];
+            }
+
+            else
+            {
+                AddReward(-2f);
+            }
+            if (count >= deliveries.Count)
+            {
+                PostalGameManager.Instance.AddSuccess();
+                EndEpisode();
+            }
         }
+        else if (other.tag == "Wall")
+        {
+            AddReward(-10f);
+            EndEpisode();
+        }
+
+
     }
 
     public void SetColor(ColorState color)

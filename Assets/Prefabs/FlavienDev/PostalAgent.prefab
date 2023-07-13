@@ -784,6 +784,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: cb31234f98fd5d04b8fad46ecb809a15, type: 2}
   - {fileID: 2100000, guid: bebf402a92185624bb46cdee5086639d, type: 2}
   characterMeshReference: {fileID: 1825435176362260359}
+  count: 0
+  target: {fileID: 0}
   speedRate: 1
   maxSpeedRate: 0
   minSpeedRate: 0
@@ -802,8 +804,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 7
-    NumStackedVectorObservations: 1
+    VectorObservationSize: 19
+    NumStackedVectorObservations: 4
     m_ActionSpec:
       m_NumContinuousActions: 2
       BranchSizes: 05000000
@@ -811,15 +813,14 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 7c4cef10410032f419eca8fdfe909d88, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 2
+  m_BehaviorType: 0
   m_BehaviorName: PostalBehaviour
   TeamId: 0
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
-  m_DeterministicInference: 0
-  m_ObservableAttributeHandling: 0
+  m_ObservableAttributeHandling: 2
 --- !u!114 &3868267774753577593
 MonoBehaviour:
   m_ObjectHideFlags: 0
