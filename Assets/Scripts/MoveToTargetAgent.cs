@@ -79,7 +79,6 @@ public class MoveToTargetAgent : Agent
             if (other.name == target.name)
             {
                 AddReward(200f);
-                Debug.Log(GetCumulativeReward() + " target");
                 visualAgent.material.color = Color.green;
                 count++;
 
@@ -91,19 +90,16 @@ public class MoveToTargetAgent : Agent
             else
             {
                 AddReward(-2f);
-                Debug.Log(GetCumulativeReward() + " autre ");
                 visualAgent.material.color = Color.gray;
             }
             if (count >= hub.Count)
             {
-                Debug.Log(GetCumulativeReward() + " fin ");
                 EndEpisode();
             }
         }
         else if (other.tag == "Wall")
         {
             AddReward(-100f);
-            Debug.Log(GetCumulativeReward() + " mur ");
             visualAgent.material.color = Color.red;
             EndEpisode();
         }
