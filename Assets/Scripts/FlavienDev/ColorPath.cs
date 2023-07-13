@@ -55,11 +55,11 @@ public class ColorPath : MonoBehaviour
     //     {
     //         if (agent.actualColor != actualPathColor)
     //         {
-    //             agent.speedRate = agent.minSpeedRate;
+    //             agent.speedRate = agent.slowSpeedMultiplier;
     //         }
     //         else
     //         {
-    //             agent.speedRate = agent.maxSpeedRate;
+    //             agent.speedRate = agent.maxSpeed;
     //         }
     //     }
     // }
@@ -69,7 +69,7 @@ public class ColorPath : MonoBehaviour
     //     PostalAgent agent = other.GetComponent<PostalAgent>();
     //     if (agent != null)
     //     {
-    //         agent.speedRate = agent.maxSpeedRate;
+    //         agent.speedRate = agent.maxSpeed;
     //     }
     // }
 }

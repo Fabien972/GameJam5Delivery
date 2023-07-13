@@ -66,6 +66,7 @@ public class PostalGameManager : MonoBehaviour
         for (int i = 0; i < 1 /* boxcount */; i++)
         {
             var box = Instantiate(postalBoxPrefab, environment.transform);
+            box.transform.localPosition = GetRandomSpawnPos();
             postalBoxes.Add(box.transform);
         }
 
@@ -107,14 +108,14 @@ public class PostalGameManager : MonoBehaviour
             return;
         }
         
-        foreach (var box in postalBoxes)
-        {
-            box.localPosition = GetRandomSpawnPos();
-        }
+        // foreach (var box in postalBoxes)
+        // {
+        //     box.localPosition = GetRandomSpawnPos();
+        // }
         
         foreach (var e in colorRoads)
         {
-            e.SetColor((ColorState) Random.Range(0, 4));
+            e.SetColor((ColorState) Random.Range(1, 5));
         }
     }
 

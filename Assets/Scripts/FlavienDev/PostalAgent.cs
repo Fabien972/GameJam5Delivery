@@ -1,13 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.XR;
 using Random = UnityEngine.Random;
 
 // mlagents-learn config\Postal.yaml --env=Build --no-graphics --run-id=PostalMassive105
@@ -15,41 +10,23 @@ using Random = UnityEngine.Random;
 
 public class PostalAgent : Agent
 {
-    
     [SerializeField] private float moveSpeed = 15.0f;
+    [SerializeField] private float slowSpeedMultiplier = 0.1f;
     
     [SerializeField] private List<Material> colorMaterials = new List<Material>();
     [SerializeField] private SkinnedMeshRenderer characterMeshReference;
-    private Rigidbody rb;
 
-    public float speedRate = 1;
-    public float maxSpeedRate;
-    public float minSpeedRate;
-    public ColorState actualColor;
-    
-    public ColorState currentFloorColor;
+    private float speedRate = 1.0f;
+    private ColorState actualColor;
+    private ColorState currentFloorColor;
 
     private List<Transform> deliveries = new List<Transform>();
+    private Transform nextDelivery;
 
-    private List<GameObject> checkpoints = new List<GameObject>();
-    
+    private static PostalAgent one;
+
     public override void Initialize()
     {
-        minSpeedRate = speedRate * 0.1f;
-        maxSpeedRate = speedRate;
-
-        // GameManager gameManagerRef = GameObject.Find("GameManager").GetComponent<GameManager>();
-        // if(gameManagerRef != null )
-        // {
-        //     foreach (MailBox item in gameManagerRef.GetLevelMailBoxes())
-        //     {
-        //         deliveries.Add(item as PostalBox);
-        //     }
-        // }
-        
-        // Cache the agent rigidbody
-        rb = GetComponent<Rigidbody>();
-
         deliveries = PostalGameManager.Instance.postalBoxes;
     }
     
@@ -57,18 +34,18 @@ public class PostalAgent : Agent
     {
         transform.localPosition = PostalGameManager.Instance.GetRandomSpawnPos();
 
-        currentFloorColor = (ColorState) Random.Range(0, 4);
+        currentFloorColor = (ColorState) Random.Range(1, 5);
         SetColor(currentFloorColor);
 
-        speedRate = maxSpeedRate;
-        
-        checkpoints.Clear();
+        speedRate = 1.0f;
+
+        nextDelivery = deliveries[0];
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(deliveries[0].localPosition);
+        sensor.AddObservation(nextDelivery.localPosition);
         sensor.AddObservation((int) currentFloorColor);
     }
 
@@ -77,17 +54,15 @@ public class PostalAgent : Agent
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
-        var lastDist = Vector3.Distance(transform.localPosition, deliveries[0].localPosition);
-
         transform.localPosition += new Vector3(moveX, 0, moveZ) * Time.deltaTime * moveSpeed * speedRate;
 
-        // if (Vector3.Distance(transform.localPosition, deliveries[0].localPosition) >= lastDist)
-        // {
-        //     AddReward(-0.3f);
-        // }
-
         int newColor = actions.DiscreteActions[0];
-        
+
+        if (newColor == 0)
+        {
+            // do nothing
+        }
+
         if (newColor == 1)
         {
             SetColor(ColorState.BLUE);
@@ -108,18 +83,17 @@ public class PostalAgent : Agent
             SetColor(ColorState.GREEN);
         }
         
-        if (currentFloorColor != actualColor)
+        if (currentFloorColor != ColorState.NEUTRAL && currentFloorColor != actualColor)
         {
-            speedRate = minSpeedRate;
-            AddReward(-0.04f);
+            speedRate = slowSpeedMultiplier;
+            AddReward(-0.05f);
         }
         else
         {
-            speedRate = maxSpeedRate;
+            speedRate = 1.0f;
         }
-        
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position + new Vector3(0, 10, 0), Vector3.down, out hit, 100, 1 << 8 /* Road */))
+
+        if (Physics.Raycast(transform.position + new Vector3(0, 10, 0), Vector3.down, out var hit, 20, 1 << 8 /* Road */))
         {
             if (hit.transform.TryGetComponent(out ColorPath path))
             {
@@ -133,7 +107,7 @@ public class PostalAgent : Agent
             EndEpisode();
         }
 
-        AddReward(-0.5f / MaxStep);
+        AddReward(-1f / MaxStep); // always add a negative reward so the agent learns to always go faster
 
         if (StepCount >= MaxStep)
         {
@@ -158,23 +132,9 @@ public class PostalAgent : Agent
     {
         if (other.TryGetComponent(out PostalBox box))
         {
-            AddReward(100.0f);
+            AddReward(50.0f);
             PostalGameManager.Instance.AddSuccess();
             EndEpisode();
-        }
-        
-        if (other.CompareTag("Checkpoint") && !checkpoints.Contains(other.gameObject))
-        {
-            checkpoints.Add(other.gameObject);
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Checkpoint") && !checkpoints.Contains(other.gameObject))
-        {
-            checkpoints.Add(other.gameObject);
-            AddReward(20.0f);
         }
     }
 
@@ -182,27 +142,10 @@ public class PostalAgent : Agent
     {
         actualColor = color;
 
-        if(characterMeshReference != null)
+        if (characterMeshReference)
         {
-            switch (color)
-            {
-                case ColorState.BLUE:
-                    characterMeshReference.material = colorMaterials[0];
-                    break;
-                case ColorState.YELLOW:
-                    characterMeshReference.material = colorMaterials[1];
-                    break;
-                case ColorState.RED:
-                    characterMeshReference.material = colorMaterials[2];
-                    break;
-                case ColorState.GREEN:
-                    characterMeshReference.material = colorMaterials[3];
-                    break;
-                default:
-                    break;
-            }
+            characterMeshReference.material = colorMaterials[((int) color)-1];
         }
-       
     }
     
 }

@@ -778,17 +778,13 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 2000
   moveSpeed: 12
+  slowSpeedMultiplier: 0.1
   colorMaterials:
   - {fileID: 2100000, guid: cc96bd15666a34a48be59cd7c91fdbcf, type: 2}
   - {fileID: 2100000, guid: 95020bf3891c56d409f46242a536a269, type: 2}
   - {fileID: 2100000, guid: cb31234f98fd5d04b8fad46ecb809a15, type: 2}
   - {fileID: 2100000, guid: bebf402a92185624bb46cdee5086639d, type: 2}
   characterMeshReference: {fileID: 1825435176362260359}
-  speedRate: 1
-  maxSpeedRate: 0
-  minSpeedRate: 0
-  actualColor: 0
-  currentFloorColor: 0
 --- !u!114 &3868267774753577588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -811,7 +807,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 7c4cef10410032f419eca8fdfe909d88, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 3106d86671a6a7f4fac79a1792b5c365, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 2
   m_BehaviorName: PostalBehaviour
