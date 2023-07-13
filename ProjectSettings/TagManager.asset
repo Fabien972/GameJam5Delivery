@@ -7,7 +7,8 @@ TagManager:
   - Agent
   - Target
   - Wall
-  - Bordure
+  - Road
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -16,8 +17,8 @@ TagManager:
   - Water
   - UI
   - AgentVision
-  - 
-  - 
+  - Agent
+  - Road
   - 
   - 
   - 
