@@ -9,19 +9,36 @@ using Unity.MLAgents.Sensors;
 public class MoveToTargetAgent : Agent
 {
     [SerializeField] private Transform target;
-    [SerializeField] private LBoxs LBoxs;
+    [SerializeField] private List<Transform> hub = new List<Transform>();
+    [SerializeField] private Transform env;
     [SerializeField] private MeshRenderer visualAgent;
+    [SerializeField] private int count;
 
-
-    public int count;
 
     public override void OnEpisodeBegin()
     {
         count = 0;
-        target = LBoxs.mailBoxes[count].transform;
 
-        //target.localPosition = new Vector3(Random.Range(10, 18), 0, Random.Range(-3, 3));
-        transform.localPosition = new Vector3(0, 0, 0);
+        target = hub[count];
+
+        hub[0].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        hub[1].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        hub[3].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        hub[3].GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+
+        target.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
+
+        transform.localPosition = new Vector3(Random.Range(-1, 1), 0, Random.Range(-1, 1));
+
+
+        hub[0].localPosition = new Vector3(Random.Range(3, 7), 0, Random.Range(3, 7));
+        hub[1].localPosition = new Vector3(Random.Range(-3, -7), 0, Random.Range(3, 7));
+        hub[2].localPosition = new Vector3(Random.Range(-3, -7), 0, Random.Range(-3, -7));
+        hub[3].localPosition = new Vector3(Random.Range(3, 7), 0, Random.Range(-3, -7));
+
+
+        env.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
+        transform.rotation = Quaternion.identity;
 
     }
 
@@ -39,11 +56,11 @@ public class MoveToTargetAgent : Agent
 
         sensor.AddObservation((Vector3)target.localPosition);
 
-        foreach (MailBox item in LBoxs.mailBoxes)
-        {
-            sensor.AddObservation((Vector3)item.transform.localPosition
-                + LBoxs.transform.localPosition);
-        }
+        sensor.AddObservation((Vector3)hub[0].localPosition);
+        sensor.AddObservation((Vector3)hub[1].localPosition);
+        sensor.AddObservation((Vector3)hub[2].localPosition);
+        sensor.AddObservation((Vector3)hub[3].localPosition);
+
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -52,37 +69,46 @@ public class MoveToTargetAgent : Agent
 
         float mouvementSpeed = 5f;
 
-        transform.localPosition += new Vector3(moveX,0, moveY) * Time.deltaTime * mouvementSpeed;
+        transform.localPosition += new Vector3(moveX, 0, moveY) * Time.deltaTime * mouvementSpeed;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Target")
         {
-            Debug.Log("target");
             if (other.name == target.name)
             {
-                AddReward(2000f);
+                AddReward(200f);
+                Debug.Log(GetCumulativeReward() + " target");
                 visualAgent.material.color = Color.green;
                 count++;
-                target = LBoxs.mailBoxes[count % LBoxs.mailBoxes.Count].transform;
+
+                target.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+                target = hub[count % hub.Count];
+                target.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
             }
+
             else
             {
+                AddReward(-2f);
+                Debug.Log(GetCumulativeReward() + " autre ");
                 visualAgent.material.color = Color.gray;
-                AddReward(-100f);
             }
-            if (count >= LBoxs.mailBoxes.Count)
+            if (count >= hub.Count)
             {
+                Debug.Log(GetCumulativeReward() + " fin ");
                 EndEpisode();
             }
         }
         else if (other.tag == "Wall")
         {
-            Debug.Log("wall");
-            visualAgent.material.color = Color.red;
             AddReward(-100f);
+            Debug.Log(GetCumulativeReward() + " mur ");
+            visualAgent.material.color = Color.red;
             EndEpisode();
         }
     }
 }
+
+
+
